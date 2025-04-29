@@ -1,4 +1,8 @@
-struct rtcdate {
+/*
+时间日期结构体
+*/
+struct rtcdate
+{
   uint second;
   uint minute;
   uint hour;
