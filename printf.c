@@ -2,6 +2,8 @@
 #include "stat.h"
 #include "user.h"
 
+// print 函数的实现
+
 static void
 putc(int fd, char c)
 {
@@ -17,64 +19,86 @@ printint(int fd, int xx, int base, int sgn)
   uint x;
 
   neg = 0;
-  if(sgn && xx < 0){
+  if (sgn && xx < 0)
+  {
     neg = 1;
     x = -xx;
-  } else {
+  }
+  else
+  {
     x = xx;
   }
 
   i = 0;
-  do{
+  do
+  {
     buf[i++] = digits[x % base];
-  }while((x /= base) != 0);
-  if(neg)
+  } while ((x /= base) != 0);
+  if (neg)
     buf[i++] = '-';
 
-  while(--i >= 0)
+  while (--i >= 0)
     putc(fd, buf[i]);
 }
 
 // Print to the given fd. Only understands %d, %x, %p, %s.
-void
-printf(int fd, const char *fmt, ...)
+void printf(int fd, const char *fmt, ...)
 {
   char *s;
   int c, i, state;
   uint *ap;
 
   state = 0;
-  ap = (uint*)(void*)&fmt + 1;
-  for(i = 0; fmt[i]; i++){
+  ap = (uint *)(void *)&fmt + 1;
+  for (i = 0; fmt[i]; i++)
+  {
     c = fmt[i] & 0xff;
-    if(state == 0){
-      if(c == '%'){
+    if (state == 0)
+    {
+      if (c == '%')
+      {
         state = '%';
-      } else {
+      }
+      else
+      {
         putc(fd, c);
       }
-    } else if(state == '%'){
-      if(c == 'd'){
+    }
+    else if (state == '%')
+    {
+      if (c == 'd')
+      {
         printint(fd, *ap, 10, 1);
         ap++;
-      } else if(c == 'x' || c == 'p'){
+      }
+      else if (c == 'x' || c == 'p')
+      {
         printint(fd, *ap, 16, 0);
         ap++;
-      } else if(c == 's'){
-        s = (char*)*ap;
+      }
+      else if (c == 's')
+      {
+        s = (char *)*ap;
         ap++;
-        if(s == 0)
+        if (s == 0)
           s = "(null)";
-        while(*s != 0){
+        while (*s != 0)
+        {
           putc(fd, *s);
           s++;
         }
-      } else if(c == 'c'){
+      }
+      else if (c == 'c')
+      {
         putc(fd, *ap);
         ap++;
-      } else if(c == '%'){
+      }
+      else if (c == '%')
+      {
         putc(fd, c);
-      } else {
+      }
+      else
+      {
         // Unknown % sequence.  Print it to draw attention.
         putc(fd, '%');
         putc(fd, c);
